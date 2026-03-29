@@ -1,4 +1,4 @@
-const CACHE_NAME="numvia-v2";
+const CACHE_NAME="numvia-v3";
 
 const ASSETS=[
 "./",
