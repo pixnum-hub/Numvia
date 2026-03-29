@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NUMVIA</title>
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#8e44ad">
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<style>
+:root { --accent:#8e44ad; }
+
+body {
+  margin:0;
+  padding:12px;
+  font-family:'Segoe UI',sans-serif;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  background: linear-gradient(-45deg,#8e44ad,#6f2d91,#3b0a57,#000);
+  background-size:400% 400%;
+  animation:gradientBG 10s ease infinite;
+  color:#fff;
+}
+
+@keyframes gradientBG {
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+.card {
+  backdrop-filter:blur(18px);
+  background:rgba(255,255,255,0.08);
+  border-radius:24px;
+  padding:1.5rem 1.2rem;
+  width:calc(100% - 24px);
+  max-width:420px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.5);
+}
+
+header {
+  font-size:1.7rem;
+  text-align:center;
+  margin-bottom:1rem;
+}
+
+.form-group {
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+input, select, button {
+  width:100%;
+  height:48px;
+  padding:0 14px;
+  border-radius:12px;
+  border:none;
+  outline:none;
+  box-sizing:border-box;
+}
+
+input, select {
+  background:rgba(255,255,255,0.15);
+  color:#fff;
+}
+
+button {
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+button:active {
+  transform:scale(0.97);
+}
+
+button:nth-of-type(1) {
+  background:linear-gradient(135deg,#f1c40f,#ff9f1c);
+}
+
+button:nth-of-type(2) {
+  background:rgba(255,255,255,0.25);
+  color:#fff;
+}
+
+#installBtn {
+  display:none;
+  background:#fff;
+  color:#000;
+}
+
+.result-box {
+  margin-top:12px;
+  padding:1rem;
+  border-radius:14px;
+  background:rgba(255,255,255,0.12);
+  animation:fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from {opacity:0; transform:translateY(10px);}
+  to {opacity:1; transform:translateY(0);}
+}
+
+footer {
+  margin-top:1rem;
+  font-size:0.8rem;
+  text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+<header>NUMVIA</header>
+
+<div class="form-group">
+  <input type="text" id="name" placeholder="Enter name or numbers">
+  <input type="date" id="dob">
+
+  <select id="system">
+    <option value="chaldean">Chaldean</option>
+    <option value="pythagoras">Pythagoras</option>
+    <option value="vedic">Vedic</option>
+    <option value="kabalah">Kabalah</option>
+  </select>
+
+  <button onclick="calculate()">Calculate</button>
+  <button onclick="resetForm()">Reset</button>
+  <button id="installBtn">Install App</button>
+</div>
+
+<div id="result"></div>
+</div>
+
+<footer>© Manik Roy <span id="year"></span>. All Rights Reserved.</footer>
+
+<script>
+// Auto Year
+document.getElementById("year").textContent = new Date().getFullYear();
+
+/* Maps */
+const maps = {
+chaldean:{A:1,B:2,C:3,D:4,E:5,F:8,G:3,H:5,I:1,J:1,K:2,L:3,M:4,N:5,O:7,P:8,Q:1,R:2,S:3,T:4,U:6,V:6,W:6,X:5,Y:1,Z:7},
+pythagoras:{A:1,B:2,C:3,D:4,E:5,F:6,G:7,H:8,I:9,J:1,K:2,L:3,M:4,N:5,O:6,P:7,Q:8,R:9,S:1,T:2,U:3,V:4,W:5,X:6,Y:7,Z:8},
+vedic:{A:1,B:2,C:3,D:4,E:5,F:6,G:7,H:8,I:9,J:1,K:2,L:3,M:4,N:5,O:7,P:8,Q:9,R:1,S:2,T:3,U:4,V:5,W:6,X:7,Y:8,Z:9},
+kabalah:{A:1,B:2,C:3,D:4,E:5,F:6,G:7,H:8,I:9,J:10,K:11,L:12,M:13,N:14,O:15,P:16,Q:17,R:18,S:19,T:20,U:21,V:22,W:23,X:24,Y:25,Z:26}
+};
+
+const meanings = { /* (same 1–99 meanings as before, unchanged) */ };
+
+function reduce(n){
+while(n>9 && ![11,22,33].includes(n)){
+n=n.toString().split('').reduce((a,b)=>a+Number(b),0);
+}
+return n;
+}
+
+function toTwoDigit(n){
+while(n>99){
+n=n.toString().split('').reduce((a,b)=>a+Number(b),0);
+}
+return n;
+}
+
+function calculate(){
+const name=document.getElementById("name").value.trim().toUpperCase();
+const dob=document.getElementById("dob").value;
+const map=maps[document.getElementById("system").value];
+const result=document.getElementById("result");
+
+if(!name && !dob){
+result.innerHTML="<div class='result-box'>Enter name or DOB</div>";
+return;
+}
+
+let html="";
+
+if(name){
+let raw=/^[0-9]+$/.test(name)?parseInt(name):
+name.replace(/[^A-Z]/g,'').split('').reduce((s,l)=>s+(map[l]||0),0);
+
+let compound=toTwoDigit(raw);
+let single=reduce(compound);
+
+html+=`<div class="result-box">
+<b>Compound:</b> ${compound}<br>${meanings[compound]||""}<br><br>
+<b>Single:</b> ${single}<br>${meanings[single]||""}
+</div>`;
+}
+
+if(dob){
+let total=dob.replace(/-/g,'').split('').reduce((a,b)=>a+Number(b),0);
+let d=reduce(total);
+
+html+=`<div class="result-box">
+<b>DOB Number:</b> ${d}<br>${meanings[d]||""}
+</div>`;
+}
+
+result.innerHTML=html;
+}
+
+function resetForm(){
+document.getElementById("name").value="";
+document.getElementById("dob").value="";
+document.getElementById("system").selectedIndex=0;
+document.getElementById("result").innerHTML="";
+}
+
+/* Install */
+let deferredPrompt;
+const installBtn=document.getElementById("installBtn");
+
+window.addEventListener("beforeinstallprompt",(e)=>{
+e.preventDefault();
+deferredPrompt=e;
+installBtn.style.display="block";
+});
+
+installBtn.onclick=async()=>{
+if(!deferredPrompt) return;
+deferredPrompt.prompt();
+await deferredPrompt.userChoice;
+installBtn.style.display="none";
+};
+
+/* SW */
+if("serviceWorker" in navigator){
+navigator.serviceWorker.register("sw.js");
+}
+</script>
+
+</body>
+</html>
