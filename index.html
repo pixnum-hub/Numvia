@@ -139,11 +139,41 @@ footer {
 // Auto year
 document.getElementById("year").textContent=new Date().getFullYear();
 
-/* Numerology Maps */
-const maps = { /* same as before */ };
+/* Maps */
+const maps = {
+chaldean:{A:1,B:2,C:3,D:4,E:5,F:8,G:3,H:5,I:1,J:1,K:2,L:3,M:4,N:5,O:7,P:8,Q:1,R:2,S:3,T:4,U:6,V:6,W:6,X:5,Y:1,Z:7},
+pythagoras:{A:1,B:2,C:3,D:4,E:5,F:6,G:7,H:8,I:9,J:1,K:2,L:3,M:4,N:5,O:6,P:7,Q:8,R:9,S:1,T:2,U:3,V:4,W:5,X:6,Y:7,Z:8},
+vedic:{A:1,B:2,C:3,D:4,E:5,F:6,G:7,H:8,I:9,J:1,K:2,L:3,M:4,N:5,O:7,P:8,Q:9,R:1,S:2,T:3,U:4,V:5,W:6,X:7,Y:8,Z:9},
+kabalah:{A:1,B:2,C:3,D:4,E:5,F:6,G:7,H:8,I:9,J:10,K:11,L:12,M:13,N:14,O:15,P:16,Q:17,R:18,S:19,T:20,U:21,V:22,W:23,X:24,Y:25,Z:26}
+};
 
-/* FULL MEANINGS 1–99 */
-const meanings = { /* (full meanings from previous message) */ };
+/* Meanings 1–99 */
+const meanings = {
+1:"Leadership, independence",2:"Balance, cooperation",3:"Creativity",4:"Stability",
+5:"Freedom",6:"Responsibility",7:"Spirituality",8:"Power",9:"Compassion",
+10:"New beginnings",11:"Master intuition",12:"Learning",13:"Transformation",
+14:"Change",15:"Love",16:"Karma",17:"Success",18:"Humanitarian",19:"Independence",
+20:"Diplomacy",21:"Creative success",22:"Master builder",23:"Freedom",
+24:"Family",25:"Wisdom",26:"Material success",27:"Spiritual insight",
+28:"Leadership",29:"Sensitivity",30:"Expression",31:"Practicality",
+32:"Communication",33:"Master teacher",34:"Growth",35:"Adventure",
+36:"Responsibility",37:"Spiritual awareness",38:"Power",39:"Compassion",
+40:"Discipline",41:"Independence",42:"Harmony",43:"Growth",
+44:"Master builder",45:"Freedom",46:"Responsibility",47:"Inner wisdom",
+48:"Success",49:"Service",50:"Freedom",51:"Leadership",
+52:"Balance",53:"Change",54:"Structure",55:"Transformation",
+56:"Service",57:"Spiritual growth",58:"Power",59:"Compassion",
+60:"Family",61:"Growth",62:"Harmony",63:"Care",
+64:"Stability",65:"Freedom",66:"Master love",67:"Spiritual depth",
+68:"Achievement",69:"Service",70:"Awakening",71:"Insight",
+72:"Harmony",73:"Creativity",74:"Foundation",75:"Wisdom",
+76:"Responsibility",77:"Master intuition",78:"Achievement",79:"Service",
+80:"Authority",81:"Leadership",82:"Partnership",83:"Creativity",
+84:"Success",85:"Freedom",86:"Family",87:"Insight",
+88:"Abundance",89:"Humanitarian",90:"Completion",91:"Leadership",
+92:"Service",93:"Compassion",94:"Stability",95:"Freedom",
+96:"Care",97:"Wisdom",98:"Power",99:"Universal compassion"
+};
 
 function reduce(n){
 while(n>9 && ![11,22,33].includes(n)){
@@ -160,6 +190,7 @@ return n;
 }
 
 function calculate(){
+try{
 const name=document.getElementById("name").value.trim().toUpperCase();
 const dob=document.getElementById("dob").value;
 const map=maps[document.getElementById("system").value];
@@ -195,6 +226,10 @@ html+=`<div class="result-box">
 }
 
 result.innerHTML=html;
+
+}catch(e){
+document.getElementById("result").innerHTML="<div class='result-box'>Error</div>";
+}
 }
 
 function resetForm(){

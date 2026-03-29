@@ -1,25 +1,9 @@
-const CACHE_NAME="numvia-v3";
-
-const ASSETS=[
-"./",
-"./index.html",
-"./manifest.json",
-"./icon-192.png",
-"./icon-512.png"
-];
+const CACHE_NAME="numvia-v4";
 
 self.addEventListener("install",e=>{
-e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(ASSETS)));
-self.skipWaiting();
-});
-
-self.addEventListener("activate",e=>{
 e.waitUntil(
-caches.keys().then(keys=>Promise.all(
-keys.map(k=>k!==CACHE_NAME && caches.delete(k))
-))
+caches.open(CACHE_NAME).then(c=>c.addAll(["./","./index.html"]))
 );
-self.clients.claim();
 });
 
 self.addEventListener("fetch",e=>{
